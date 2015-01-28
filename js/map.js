@@ -3,7 +3,7 @@ define(
 function (jaws, utils, Platform) {
 
 var PLATFORM_HEIGHT = 10,
-	PLATFORM_MIN_SPACING = 60;
+	PLATFORM_MIN_SPACING = 50;
 
 var Map = function (config) {
 	this.viewport = config.viewport;

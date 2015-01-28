@@ -1,6 +1,15 @@
 require.config({
 	baseUrl: 'js',
-	paths: {},
+	paths: {
+		'lodash': {
+
+		}
+	},
+	map: {
+		'lib/machina': {
+			'lodash': 'lib/lodash'
+		}
+	},
 	shim: {
 		'lib/jaws': {
 			exports: 'jaws'

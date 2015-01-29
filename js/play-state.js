@@ -1,6 +1,6 @@
 define(
-['lib/jaws', 'player', 'map'],
-function (jaws, Player, Map) {
+['lib/jaws', 'player', 'map', 'death-state'],
+function (jaws, Player, Map, DeathState) {
 
 var player, viewport, map;
 
@@ -42,14 +42,15 @@ return {
 			player.stayStill();
 		}
 
-		if(jaws.pressed('up')) {
+		if(jaws.pressedWithoutRepeat('up')) {
 			player.jump();
 		}
 
 		
 		// Update map and entities.
 		map.update();
-		
+		player.update();
+
 		// Run physics sim.
 		this.simulatePhysics();
 
@@ -57,34 +58,18 @@ return {
 		if(player.y < viewport.y + 200 && player.vy < 0) {
 			viewport.y = player.y - 200;
 		}
+
+		this.checkDeath();
+	},
+
+	checkDeath: function () {
+		if (player.y > viewport.y + viewport.height) {
+			jaws.switchGameState(DeathState);
+		}
 	},
 
 	simulatePhysics: function () {
-
 		var i, platform, collided = false;
-
-		player.updateX();
-		for(i=0; i<map.platforms.length; i++) {
-			platform = map.platforms[i];
-
-			if(collide(player, platform)) {
-				
-				collided = true;
-				
-				// Moving right.
-				if (player.vx > 0 && player.x < platform.x) {
-					player.x = platform.x - player.width;
-				} 
-
-				// Moving left;
-				else if (player.vx < 0 && player.x + player.width > platform.x + platform.width) {
-					player.x = platform.x + platform.width;
-				}
-				break;
-			}
-		}
-
-		player.updateY();
 		for(i=0; i<map.platforms.length; i++) {
 			
 			platform = map.platforms[i];
@@ -94,81 +79,23 @@ return {
 				collided = true;
 
 				// Moving down.
-				if(player.vy > 0) {
+				if(player.vy > 0 && player.highest < platform.y) {
 					// player.y = platform.y - player.height;
 					player.setBottom(platform.y);
 					// Not falling anymore.
 					player.land();
-				}
-
-				// Moving up.
-				else if(player.vy < 0) {
-					player.y = platform.y + platform.height;
-					player.vy = 0;
-					player.fall();
 				}
 				break;
 			}
 		}
 
-		if(!collided) player.fall();
-
-	},
-
-	checkCollisions: function () {
-		var platform, collided;
-		for(var i=0; i<map.platforms.length; i++) {
-			platform = map.platforms[i];
-
-			// y-axis collision.
-			player.updateY();
-			if(jaws.collide(player, platform)) {
-				// We have collided.
-				collided = true;
-
-				// Moving down.
-				if(player.vy > 0) {
-					// player.y = platform.y - player.height;
-					player.setBottom(platform.y);
-					// Not falling anymore.
-					player.land();
-				}
-
-				// Moving up.
-				else if(player.vy < 0) {
-					player.y = platform.y + platform.height;
-					player.vy = 0;
-					player.fall();
-				}
-			}
-
-			// x-axis collision.
-			player.updateX();
-			/*
-			if(jaws.collide(player, platform)) {
-				collided = true;
-				// Moving right.
-				if (player.vx > 0 && player.x < platform.x) {
-					player.x = platform.x - player.width;
-				} 
-
-				// Moving left;
-				else if (player.vx < 0 && player.x + player.width > platform.x + platform.width) {
-					player.x = platform.x + platform.width;
-				}
-			}
-			*/
-			
-			if(collided) break;
-		}
-
-		if(!collided) player.fall();
+		if(!collided && player.jumpFsm.state != 'jumping') player.fall();
 	},
 
 	draw: function () {
 		jaws.clear();
-		viewport.draw(player);
 		map.draw();
+		viewport.draw(player);
 	}
 };
 

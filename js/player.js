@@ -3,8 +3,8 @@ define(
 function (jaws, machina) {
 
 var MAX_SPEED = 6;
-var JUMP_VELOCITY = 8;
-var GRAVITY = 0.5;
+var JUMP_VELOCITY = 20;
+var GRAVITY = 0.75;
 
 var Player = function (config) {
 	config = config || {};
@@ -17,26 +17,28 @@ var Player = function (config) {
 	this.ax = 0.5;
 	this.ay = GRAVITY;
 
+	// Keep track of the highest point that the player gets to during a jump.
+	this.highest = 0;
+
 	var self = this;
 	this.jumpFsm = new machina.Fsm({
 		initialState: 'falling',
 		states: {
 			'falling': {
+				_onEnter: function () {
+					self.highest = self.y + self.height;
+				},
 
 				// While falling, move the player toward the ground on every tick.
 				update: function () {
 					self.vy += self.ay;
-				},
-
-				collide: function (item) {
-					// self.y += self.vy*-1;
-					// this.transition('grounded');
 				}
 			},
 
 			'grounded': {
 				_onEnter: function () {
 					self.vy = 0;
+					self.highest = 0;
 				},
 
 				jump: function () {
@@ -61,10 +63,12 @@ var Player = function (config) {
 		}
 	});
 
+	// Print transitions to console for debugging.
 	this.jumpFsm.on('transition', function (data) {
 		console.log(data.toState);
 	});
 
+	// State machine for horizontal movement.
 	this.horiMove = new machina.Fsm({
 		initialState: 'still',
 		states: {
@@ -99,14 +103,11 @@ var Player = function (config) {
 
 Player.prototype = Object.create(jaws.Sprite.prototype);
 
-Player.prototype.updateY = function () {
-	this.y += this.vy;
+Player.prototype.update = function () {
 	this.jumpFsm.handle('update');
-};
-
-Player.prototype.updateX = function () {
-	this.x += this.vx;
 	this.horiMove.handle('update');
+	this.y += this.vy;
+	this.x += this.vx;
 };
 
 Player.prototype.jump = function () {

@@ -115,7 +115,7 @@ return {
 		context.fillStyle = 'gray';
 		context.textAlign = 'left';
 		context.textBaseline = 'top';
-		context.fillText('Score to Beat: ' + ScoreKeeper.getHighScore(), 40, 40);
+		context.fillText('Score to Beat: ' + ScoreKeeper.getHighScore(), 0, 40);
 	},
 
 	draw: function () {

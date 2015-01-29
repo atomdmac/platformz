@@ -22,9 +22,9 @@ return {
 		
 		context.font = '20px Arial';
 		if(ScoreKeeper.isHighScore()) {
-			context.fillText('But at least you beat you\'re last high score!', jaws.canvas.width / 2, jaws.canvas.height / 2 + 30);
+			context.fillText('But at least you beat your last high score!', jaws.canvas.width / 2, jaws.canvas.height / 2 + 30);
 		} else {
-			context.fillText('...And you didn\'t even beat you\'re last high score...', jaws.canvas.width / 2, jaws.canvas.height / 2 + 30);
+			context.fillText('...And you didn\'t even beat your last high score...', jaws.canvas.width / 2, jaws.canvas.height / 2 + 30);
 		}
 
 	}

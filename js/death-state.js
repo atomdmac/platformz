@@ -14,7 +14,7 @@ return {
 		context.fill();
 		context.globalAlpha = 1;
 
-		context.fillStyle = 'black';
+		context.fillStyle = '#fff';
 		context.font = '25px Arial';
 		context.textAlign = 'center';
 		context.fillText('YOU FUCKIN\' DIED!', jaws.canvas.width / 2, jaws.canvas.height / 2);

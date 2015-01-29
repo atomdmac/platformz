@@ -1,8 +1,8 @@
 define(
-['lib/jaws', 'player', 'map', 'death-state'],
-function (jaws, Player, Map, DeathState) {
+['lib/jaws', 'player', 'map', 'death-state', 'score-keeper'],
+function (jaws, Player, Map, DeathState, ScoreKeeper) {
 
-var player, viewport, map;
+var player, viewport, map, score;
 
 // PLEASE CLEAN THIS UP
 function collide (spr1, spr2) {
@@ -60,10 +60,19 @@ return {
 		}
 
 		this.checkDeath();
+		this.updateScore();
+	},
+
+	updateScore: function () {
+		ScoreKeeper.setScore(Math.floor(viewport.y * -1));
 	},
 
 	checkDeath: function () {
 		if (player.y > viewport.y + viewport.height) {
+			// Save score if necessary.
+			if(ScoreKeeper.isHighScore()) {
+				ScoreKeeper.saveAsHighScore();
+			}
 			jaws.switchGameState(DeathState);
 		}
 	},
@@ -92,10 +101,28 @@ return {
 		if(!collided && player.jumpFsm.state != 'jumping') player.fall();
 	},
 
+	drawScores: function () {
+		// Draw score.
+		var context = jaws.context;
+		context.font = "22px Arial";
+		context.fillStyle = ScoreKeeper.isHighScore() ? 'green' : 'red';
+		context.textAlign = 'left';
+		context.textBaseline = 'top';
+		context.fillText('Score: ' + ScoreKeeper.getScore(), 0, 0);
+
+		// Draw high-score
+		context.font = "20px Arial";
+		context.fillStyle = 'gray';
+		context.textAlign = 'left';
+		context.textBaseline = 'top';
+		context.fillText('Score to Beat: ' + ScoreKeeper.getHighScore(), 40, 40);
+	},
+
 	draw: function () {
 		jaws.clear();
 		map.draw();
 		viewport.draw(player);
+		this.drawScores();
 	}
 };
 

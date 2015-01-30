@@ -19,6 +19,10 @@ var Player = function (config) {
 
 	// Keep track of the highest point that the player gets to during a jump.
 	this.highest = 0;
+	
+	// Jump streak experiment.
+	this.maxJumpStreak = 3;
+	this.jumpStreak = 0;
 
 	var self = this;
 	this.jumpFsm = new machina.Fsm({
@@ -32,6 +36,11 @@ var Player = function (config) {
 				// While falling, move the player toward the ground on every tick.
 				update: function () {
 					self.vy += self.ay;
+				},
+
+				// Attempt to continue your jump streak.
+				jump: function () {
+					this.transition('streaking');
 				}
 			},
 
@@ -39,6 +48,7 @@ var Player = function (config) {
 				_onEnter: function () {
 					self.vy = 0;
 					self.highest = 0;
+					self.jumpStreak = 0; // Reset jump streak.
 				},
 
 				jump: function () {
@@ -59,6 +69,20 @@ var Player = function (config) {
 						this.transition('falling');
 					}
 				},
+
+				// Attempt to continue your jump streak.
+				jump: function () {
+					this.transition('streaking');
+				}
+			},
+			
+			'streaking': {
+				_onEnter: function () {
+					if (self.jumpStreak < self.maxJumpStreak) {
+						self.jumpStreak++;
+						this.transition('jumping');
+					}
+				}
 			}
 		}
 	});

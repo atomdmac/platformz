@@ -3,9 +3,10 @@ define(
 function (jaws, machina) {
 
 var JUMP_VELOCITY = 20;
+var JUMP_MAX_REPEAT = 2;
 var Y_ACCEL = 0.75;
-var X_ACCEL = 5;
-var MAX_X_SPEED = 5;
+var X_ACCEL = 0.6;
+var MAX_X_SPEED = 6;
 var FRICTION = 0.3;
 
 var Player = function (config) {
@@ -16,15 +17,14 @@ var Player = function (config) {
 
 	this.vx = 0;
 	this.vy = 0;
-	this.ax = 0.5;
+	this.ax = X_ACCEL;
 	this.ay = Y_ACCEL;
 
 	// Keep track of the highest point that the player gets to during a jump.
 	this.highest = 0;
 	
 	// Jump streak experiment.
-	this.maxJumpStreak = 1;
-	this.jumpStreak = 0;
+	this.jumpCount = 0;
 
 	var self = this;
 
@@ -88,8 +88,8 @@ var Player = function (config) {
 
 			'streaking': {
 				_onEnter: function () {
-					if (self.jumpStreak < self.maxJumpStreak) {
-						self.jumpStreak++;
+					if (self.jumptCount < JUMP_MAX_REPEAT) {
+						self.jumptCount++;
 						this.transition('jumping');
 					}
 				},
@@ -109,7 +109,7 @@ var Player = function (config) {
 				_onEnter: function () {
 					self.vy = 0;
 					self.highest = 0;
-					self.jumpStreak = 0; // Reset jump streak.
+					self.jumptCount = 0; // Reset jump streak.
 				},
 
 				update: function () {

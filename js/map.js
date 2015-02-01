@@ -3,7 +3,10 @@ define(
 function (jaws, utils, Platform, Bomb) {
 
 var PLATFORM_HEIGHT = 10,
-	PLATFORM_MIN_SPACING = 50;
+	PLATFORM_MIN_SPACING = 50,
+	BOMB_MIN = 4,
+	BOMB_SPAWN_CHANCE = 30,
+ BOMB_INCREASE_THRESHOLD = 1000;
 
 var Map = function (config) {
 	this.viewport = config.viewport;
@@ -101,7 +104,7 @@ Map.prototype.prunePlatforms = function () {
 };
 
 Map.prototype.canCreateBomb = function () {
-	if(this.bombs.length < 4 && utils.randomInt(0, 100) < 50) {
+	if(this.bombs.length < Math.round(-1 * this.viewport.y / BOMB_INCREASE_THRESHOLD) + BOMB_MIN && utils.randomInt(0, 100) < 30) {
 		return true;
 	} else {
 		return false;

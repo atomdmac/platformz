@@ -33,7 +33,7 @@ return {
 			
 			context.globalAlpha = 1;
 			context.font = "20px Arial";
-			context.fillStyle = '#3AFEA0';
+			context.fillStyle = '#CDCDCD';
 			context.textAlign = 'center';
 			context.textBaseline = 'middle';
 			context.fillText('PAUSED ', jaws.width / 2, jaws.height / 2);

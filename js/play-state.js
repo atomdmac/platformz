@@ -141,14 +141,14 @@ return {
 		// Draw score.
 		var context = jaws.context;
 		context.font = "22px Arial";
-		context.fillStyle = ScoreKeeper.isHighScore() ? '#3AFEA0' : '#FF6D3A';
+		context.fillStyle = ScoreKeeper.isHighScore() ? '#73FFBC' : '#FF9773';
 		context.textAlign = 'left';
 		context.textBaseline = 'top';
 		context.fillText('Score: ' + ScoreKeeper.getScore(), 0, 0);
 
 		// Draw high-score
 		context.font = "20px Arial";
-		context.fillStyle = '#BB9F66';
+		context.fillStyle = '#CDCDCD';
 		context.textAlign = 'left';
 		context.textBaseline = 'top';
 		context.fillText('Score to Beat: ' + ScoreKeeper.getHighScore(), 0, 30);
@@ -159,7 +159,7 @@ return {
 		// Draw game with 50% alpha to acheive "motion blur" effect.
 		jaws.context.save();
 		jaws.context.globalAlpha = 0.5;
-		jaws.fill('#FFF');
+		jaws.fill('#595959');
 		jaws.context.restore();
 
 		// Draw game objects.

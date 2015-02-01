@@ -1,11 +1,13 @@
 define(
-['lib/jaws'],
-function (jaws) {
+['lib/jaws', 'utils'],
+function (jaws, utils) {
+
+var COLORS = ['#2FE58D', '#4270E3'];
 
 var Platform = function (config) {
 	config = config || {};
 
-	config.color = '#478266';
+	config.color = COLORS[utils.randomInt(0, COLORS.length - 1)];
 
 	jaws.Sprite.call(this, config);
 };

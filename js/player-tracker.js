@@ -5,7 +5,7 @@ function (jaws) {
 var PlayerTracker = function (options) {
 	options = options || {};
 
-	options.color = 'red';
+	options.color = '#FF6C3A';
 	options.width = 20;
 	options.height = 5;
 	options.y = 0;

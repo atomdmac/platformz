@@ -8,8 +8,10 @@ var GRAVITY = 0.25;
 var Bomb = function (config) {
 	config = config || {};
 
-	config.color = '#FF6D3A';
+	config.color = '#FFBE3A';
 	jaws.Sprite.call(this, config);
+
+	this.borderColor = '#fff';
 
 	this.vx = 0;
 	this.vy = 0;
@@ -120,6 +122,7 @@ function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
 
 Bomb.prototype.draw = function () {
 	jaws.context.fillStyle = this.color;
+	jaws.context.strokeStyle = this.borderColor;
 	roundRect(jaws.context, this.x, this.y, this.width, this.height, 5, true, false);
 };
 

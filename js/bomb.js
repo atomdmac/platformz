@@ -8,7 +8,7 @@ var GRAVITY = 0.25;
 var Bomb = function (config) {
 	config = config || {};
 
-	config.color = 'red';
+	config.color = '#FF6D3A';
 	jaws.Sprite.call(this, config);
 
 	this.vx = 0;

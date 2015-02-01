@@ -9,7 +9,7 @@ var GRAVITY = 0.75;
 var Player = function (config) {
 	config = config || {};
 
-	config.color = 'green';
+	config.color = '#4270E3';
 	jaws.Sprite.call(this, config);
 
 	this.vx = 0;

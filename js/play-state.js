@@ -136,14 +136,14 @@ return {
 		// Draw score.
 		var context = jaws.context;
 		context.font = "22px Arial";
-		context.fillStyle = ScoreKeeper.isHighScore() ? 'green' : 'red';
+		context.fillStyle = ScoreKeeper.isHighScore() ? '#3AFEA0' : '#FF6D3A';
 		context.textAlign = 'left';
 		context.textBaseline = 'top';
 		context.fillText('Score: ' + ScoreKeeper.getScore(), 0, 0);
 
 		// Draw high-score
 		context.font = "20px Arial";
-		context.fillStyle = 'gray';
+		context.fillStyle = '#BB9F66';
 		context.textAlign = 'left';
 		context.textBaseline = 'top';
 		context.fillText('Score to Beat: ' + ScoreKeeper.getHighScore(), 0, 40);

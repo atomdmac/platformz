@@ -5,7 +5,7 @@ function (jaws) {
 var Platform = function (config) {
 	config = config || {};
 
-	config.color = '#666';
+	config.color = '#478266';
 
 	jaws.Sprite.call(this, config);
 };

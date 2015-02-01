@@ -2,9 +2,11 @@ define(
 ['lib/jaws', 'lib/machina'],
 function (jaws, machina) {
 
-var MAX_SPEED = 6;
 var JUMP_VELOCITY = 20;
-var GRAVITY = 0.75;
+var Y_ACCEL = 0.75;
+var X_ACCEL = 5;
+var MAX_X_SPEED = 5;
+var FRICTION = 0.3;
 
 var Player = function (config) {
 	config = config || {};
@@ -15,7 +17,7 @@ var Player = function (config) {
 	this.vx = 0;
 	this.vy = 0;
 	this.ax = 0.5;
-	this.ay = GRAVITY;
+	this.ay = Y_ACCEL;
 
 	// Keep track of the highest point that the player gets to during a jump.
 	this.highest = 0;
@@ -45,12 +47,12 @@ var Player = function (config) {
 
 				left: function () {
 					self.vx -= self.ax;
-					if(self.vx < -MAX_SPEED) self.vx = -MAX_SPEED;
+					if(self.vx < -MAX_X_SPEED) self.vx = -MAX_X_SPEED;
 				},
 
 				right: function () {
 					self.vx += self.ax;
-					if(self.vx > MAX_SPEED) self.vx = MAX_SPEED;
+					if(self.vx > MAX_X_SPEED) self.vx = MAX_X_SPEED;
 				}
 			},
 
@@ -75,12 +77,12 @@ var Player = function (config) {
 
 				left: function () {
 					self.vx -= self.ax;
-					if(self.vx < -MAX_SPEED) self.vx = -MAX_SPEED;
+					if(self.vx < -MAX_X_SPEED) self.vx = -MAX_X_SPEED;
 				},
 
 				right: function () {
 					self.vx += self.ax;
-					if(self.vx > MAX_SPEED) self.vx = MAX_SPEED;
+					if(self.vx > MAX_X_SPEED) self.vx = MAX_X_SPEED;
 				}
 			},
 
@@ -94,12 +96,12 @@ var Player = function (config) {
 
 				left: function () {
 					self.vx -= self.ax;
-					if(self.vx < -MAX_SPEED) self.vx = -MAX_SPEED;
+					if(self.vx < -MAX_X_SPEED) self.vx = -MAX_X_SPEED;
 				},
 
 				right: function () {
 					self.vx += self.ax;
-					if(self.vx > MAX_SPEED) self.vx = MAX_SPEED;
+					if(self.vx > MAX_X_SPEED) self.vx = MAX_X_SPEED;
 				}
 			},
 
@@ -119,18 +121,19 @@ var Player = function (config) {
 
 				left: function () {
 					self.vx -= self.ax;
-					if(self.vx < -MAX_SPEED) self.vx = -MAX_SPEED;
+					if(self.vx < -MAX_X_SPEED) self.vx = -MAX_X_SPEED;
 				},
 
 				right: function () {
 					self.vx += self.ax;
-					if(self.vx > MAX_SPEED) self.vx = MAX_SPEED;
+					if(self.vx > MAX_X_SPEED) self.vx = MAX_X_SPEED;
 				},
 
 				still: function () {
-					if (self.vx > 0 && self.vx !== 0) self.vx -= self.ax;
-					else if (self.vx < 0 && self.vx !== 0) self.vx += self.ax;
-					else this.vx = 0;
+					// if (self.vx > 0 && self.vx !== 0) self.vx -= self.ax;
+					// else if (self.vx < 0 && self.vx !== 0) self.vx += self.ax;
+					// else this.vx = 0;
+					self.applyFriction();
 				}
 			}
 		}
@@ -148,6 +151,20 @@ Player.prototype.update = function () {
 	this.fsm.handle('update');
 	this.y += this.vy;
 	this.x += this.vx;
+};
+
+Player.prototype.applyFriction = function () {
+	if (this.vx > 0) {
+		this.vx -= FRICTION;
+	} 
+
+	else if (this.vx < 0) {
+		this.vx += FRICTION;
+	}
+
+	if(Math.abs(this.vx - FRICTION) < FRICTION) {
+		this.vx = 0;
+	}
 };
 
 Player.prototype.jump = function () {
@@ -176,9 +193,9 @@ Player.prototype.stayStill = function () {
 
 Player.prototype.knockBack = function (item) {
 	if(this.x - item.x > 0) {
-		this.vx = MAX_SPEED * 2;
+		this.vx = MAX_X_SPEED * 1.8;
 	} else {
-		this.vx = -MAX_SPEED * 2;
+		this.vx = -MAX_X_SPEED * 1.8;
 	}
 };
 

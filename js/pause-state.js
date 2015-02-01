@@ -3,7 +3,10 @@ define(
 function (jaws) {
 
 return {
-	setup: function () {},
+	alpha: 0,
+	setup: function () {
+		this.alpha = 0;
+	},
 	update: function () {
 		if(jaws.pressedWithoutRepeat('p')) {
 			jaws.switchGameState(jaws.previous_game_state);
@@ -16,15 +19,25 @@ return {
 		// called on the current game state before the switch to the next game
 		// state is made.  See GameLoop.loop() for details.
 		if(jaws.previous_game_state !== this) {
-			jaws.previous_game_state.draw();
+			// jaws.previous_game_state.draw();
 		}
 
-		var context = jaws.context;
-		context.font = "20px Arial";
-		context.fillStyle = 'gray';
-		context.textAlign = 'center';
-		context.textBaseline = 'middle';
-		context.fillText('PAUSED ', jaws.width / 2, jaws.height / 2);
+		if(this.alpha < 1) {
+			this.alpha += 0.2;
+
+			var context = jaws.context;
+			context.fillStyle = '#4B597D';
+			context.rect(0, 0, jaws.width, jaws.height);
+			context.globalAlpha = this.alpha * 0.5;
+			context.fill();
+			
+			context.globalAlpha = 1;
+			context.font = "20px Arial";
+			context.fillStyle = '#3AFEA0';
+			context.textAlign = 'center';
+			context.textBaseline = 'middle';
+			context.fillText('PAUSED ', jaws.width / 2, jaws.height / 2);
+		}
 	}
 };
 

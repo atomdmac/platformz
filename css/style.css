@@ -1,5 +1,7 @@
 body {
 	background: #000;
+	font-family: Arial, Sans-Serif;
+	color: #FFFFFF;
 }
 canvas {
 	background: #fff;

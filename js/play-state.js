@@ -1,8 +1,8 @@
 define(
-['lib/jaws', 'player', 'map', 'death-state', 'pause-state', 'score-keeper'],
-function (jaws, Player, Map, DeathState, PauseState, ScoreKeeper) {
+['lib/jaws', 'player', 'map', 'death-state', 'pause-state', 'score-keeper', 'player-tracker'],
+function (jaws, Player, Map, DeathState, PauseState, ScoreKeeper, PlayerTracker) {
 
-var player, viewport, map, score;
+var player, playerTracker, viewport, map, score;
 
 // PLEASE CLEAN THIS UP
 function collide (spr1, spr2) {
@@ -33,6 +33,9 @@ return {
 		});
 
 		map = new Map({viewport: viewport});
+
+		playerTracker = new PlayerTracker();
+		playerTracker.setTrackTarget(player);
 	},
 
 	update: function () {
@@ -68,6 +71,7 @@ return {
 
 		this.checkDeath();
 		this.updateScore();
+		playerTracker.update();
 	},
 
 	updateScore: function () {
@@ -161,8 +165,8 @@ return {
 		// Draw game objects.
 		map.draw();
 		viewport.draw(player);
+		viewport.draw(playerTracker);
 		this.drawScores();
-		
 	}
 };
 

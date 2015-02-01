@@ -22,7 +22,7 @@ return {
 		player = new Player({
 			x: 0,
 			y: 0,
-			width: 50,
+			width: 45,
 			height: 50
 		});
 		player.y = jaws.height - player.height - 100;

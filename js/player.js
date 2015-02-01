@@ -21,7 +21,7 @@ var Player = function (config) {
 	this.highest = 0;
 	
 	// Jump streak experiment.
-	this.maxJumpStreak = 2;
+	this.maxJumpStreak = 1;
 	this.jumpStreak = 0;
 
 	var self = this;
@@ -173,7 +173,6 @@ Player.prototype.moveRight = function () {
 };
 
 Player.prototype.stayStill = function () {
-	// this.horiMove.transition('still');
 	this.fsm.handle('still');
 };
 

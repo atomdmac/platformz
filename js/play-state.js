@@ -105,7 +105,8 @@ return {
 
 			if(jaws.collide(item, platform)) {
 				
-				collided = true;
+				// Platform collisions only occur if item is approaching from above. 
+				if(item.y < platform.y) collided = true;
 
 				// Moving down.
 				if(item.vy > 0 && item.highest < platform.y) {

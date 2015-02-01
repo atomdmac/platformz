@@ -1,6 +1,6 @@
 define(
-['lib/jaws', 'player', 'map', 'death-state', 'score-keeper'],
-function (jaws, Player, Map, DeathState, ScoreKeeper) {
+['lib/jaws', 'player', 'map', 'death-state', 'pause-state', 'score-keeper'],
+function (jaws, Player, Map, DeathState, PauseState, ScoreKeeper) {
 
 var player, viewport, map, score;
 
@@ -15,6 +15,10 @@ function collide (spr1, spr2) {
 return {
 
 	setup: function () {
+		// Make sure setup() doesn't run when returning from pause.
+		// TODO: Find a less hack-y way to make sure setup() doesn't run when returning from pause.
+		if(player) return;
+
 		player = new Player({
 			x: 0,
 			y: 0,
@@ -44,6 +48,10 @@ return {
 
 		if(jaws.pressedWithoutRepeat('up')) {
 			player.jump();
+		}
+
+		if(jaws.pressedWithoutRepeat('p')) {
+			jaws.switchGameState(PauseState);
 		}
 
 		

@@ -21,7 +21,6 @@ require(
 ['lib/jaws', 'play-state'],
 function (jaws, playState) {
 
-	jaws.init({width: 500, height: 800});
 	jaws.start(playState);
 
 });

@@ -28,7 +28,7 @@ return {
 			var context = jaws.context;
 			context.fillStyle = '#4B597D';
 			context.rect(0, 0, jaws.width, jaws.height);
-			context.globalAlpha = this.alpha * 0.5;
+			context.globalAlpha = this.alpha * 0.35;
 			context.fill();
 			
 			context.globalAlpha = 1;

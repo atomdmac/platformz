@@ -7,7 +7,7 @@ var JUMP_MAX_REPEAT = 2;
 var Y_ACCEL = 0.75;
 var X_ACCEL = 0.6;
 var MAX_X_SPEED = 6;
-var FRICTION = 0.3;
+var FRICTION = 0.45;
 
 var Player = function (config) {
 	config = config || {};

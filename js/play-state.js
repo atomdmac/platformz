@@ -159,7 +159,7 @@ return {
 		// Draw game with 50% alpha to acheive "motion blur" effect.
 		jaws.context.save();
 		jaws.context.globalAlpha = 0.5;
-		jaws.fill('#595959');
+		jaws.fill('#000');
 		jaws.context.restore();
 
 		// Draw game objects.

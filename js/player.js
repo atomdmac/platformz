@@ -31,12 +31,10 @@ var Player = function (config) {
 
 		states: {
 			'falling': {
-				_onEnter: function () {
-					self.highest = self.y + self.height;
-				},
 
 				// While falling, move the player toward the ground on every tick.
 				update: function () {
+					self.highest = self.y + self.height;
 					self.vy += self.ay;
 				},
 

@@ -49,10 +49,9 @@ return {
 		
 		// Update map and entities.
 		map.update();
-		player.update();
-
-		// Run physics sim.
-		this.simulatePhysics();
+		this.updatePlayer();
+		this.updateBombs();
+		this.collideBombs();
 
 		// Move viewport.
 		if(player.y < viewport.y + 200 && player.vy < 0) {
@@ -77,28 +76,52 @@ return {
 		}
 	},
 
-	simulatePhysics: function () {
+	updatePlayer: function () {
+		player.update();
+		this.simulatePhysics(player);
+	},
+
+	updateBombs: function () {
+		var bombs = map.bombs, i;
+		for(i=0; i<bombs.length; i++) {
+			bombs[i].update();
+			this.simulatePhysics(bombs[i]);
+		}
+	},
+
+	simulatePhysics: function (item) {
 		var i, platform, collided = false;
 		for(i=0; i<map.platforms.length; i++) {
 			
 			platform = map.platforms[i];
 
-			if(jaws.collide(player, platform)) {
+			if(jaws.collide(item, platform)) {
 				
 				collided = true;
 
 				// Moving down.
-				if(player.vy > 0 && player.highest < platform.y) {
-					// player.y = platform.y - player.height;
-					player.setBottom(platform.y);
+				if(item.vy > 0 && item.highest < platform.y) {
+					// item.y = platform.y - item.height;
+					item.setBottom(platform.y);
 					// Not falling anymore.
-					player.land();
+					item.land();
 				}
 				break;
 			}
 		}
 
-		if(!collided && player.jumpFsm.state != 'jumping') player.fall();
+		if(!collided && item.fsm.state != 'jumping') item.fall();
+	},
+
+	collideBombs: function () {
+		var i, bomb;
+		for(i=0; i<map.bombs.length; i++) {
+			bomb = map.bombs[i];
+			if(jaws.collide(player, bomb)) {
+				player.knockBack(bomb);
+				break;
+			}
+		}
 	},
 
 	drawScores: function () {

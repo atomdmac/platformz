@@ -1,6 +1,6 @@
 define(
-['lib/jaws', 'utils', 'platform'],
-function (jaws, utils, Platform) {
+['lib/jaws', 'utils', 'platform', 'bomb'],
+function (jaws, utils, Platform, Bomb) {
 
 var PLATFORM_HEIGHT = 10,
 	PLATFORM_MIN_SPACING = 50;
@@ -8,6 +8,7 @@ var PLATFORM_HEIGHT = 10,
 var Map = function (config) {
 	this.viewport = config.viewport;
 	this.platforms = [];
+	this.bombs = [];
 	this.initialize();
 };
 
@@ -23,15 +24,25 @@ Map.prototype.update = function () {
 	// Prune platforms that have fallen off the screen.
 	this.prunePlatforms();
 
+	// Prune bombs that have fallen off the screen.
+	this.pruneBombs();
+
 	// Create more platforms if necessary.
 	if(this.canCreatePlatform()) {
 		this.createPlatform(this.viewport.y);
+	}
+
+	if(this.canCreateBomb()) {
+		this.createBomb();
 	}
 };
 
 Map.prototype.draw = function () {
 	for(var i=0; i<this.platforms.length; i++) {
 		this.viewport.draw(this.platforms[i]);
+	}
+	for(i=0; i<this.bombs.length; i++) {
+		this.viewport.draw(this.bombs[i]);
 	}
 };
 
@@ -85,6 +96,37 @@ Map.prototype.prunePlatforms = function () {
 		platform = this.platforms[i];
 		if(!this.viewport.isPartlyInside(platform)) {
 			this.platforms.splice(i, 1);
+		}
+	}
+};
+
+Map.prototype.canCreateBomb = function () {
+	if(this.bombs.length < 4 && utils.randomInt(0, 100) < 50) {
+		return true;
+	} else {
+		return false;
+	}
+};
+
+Map.prototype.createBomb = function () {
+	var y = this.viewport.y - 40,
+		x = utils.randomInt(0, jaws.width);
+	this.bombs.push(new Bomb({
+		x: x,
+		y: y,
+		width: 20,
+		height: 20
+	}));
+};
+
+Map.prototype.pruneBombs = function () {
+	var i = this.bombs.length - 1;
+		bomb = null;
+	for(; i>=0; i--) {
+		bomb = this.bombs[i];
+
+		if(bomb.y > this.viewport.y + this.viewport.height) {
+			this.bombs.splice(i, 1);
 		}
 	}
 };

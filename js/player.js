@@ -19,10 +19,16 @@ var Player = function (config) {
 
 	// Keep track of the highest point that the player gets to during a jump.
 	this.highest = 0;
+	
+	// Jump streak experiment.
+	this.maxJumpStreak = 2;
+	this.jumpStreak = 0;
 
 	var self = this;
-	this.jumpFsm = new machina.Fsm({
+
+	this.fsm = new machina.Fsm({
 		initialState: 'falling',
+
 		states: {
 			'falling': {
 				_onEnter: function () {
@@ -32,17 +38,21 @@ var Player = function (config) {
 				// While falling, move the player toward the ground on every tick.
 				update: function () {
 					self.vy += self.ay;
-				}
-			},
-
-			'grounded': {
-				_onEnter: function () {
-					self.vy = 0;
-					self.highest = 0;
 				},
 
+				// Attempt to continue your jump streak.
 				jump: function () {
-					this.transition('jumping');
+					this.transition('streaking');
+				},
+
+				left: function () {
+					self.vx -= self.ax;
+					if(self.vx < -MAX_SPEED) self.vx = -MAX_SPEED;
+				},
+
+				right: function () {
+					self.vx += self.ax;
+					if(self.vx > MAX_SPEED) self.vx = MAX_SPEED;
 				}
 			},
 
@@ -54,88 +64,125 @@ var Player = function (config) {
 				// While falling, move the player toward the ground on every tick.
 				update: function () {
 					self.vy += self.ay;
-
+					self.highest = self.y + self.height;
 					if(self.vy > 0) {
 						this.transition('falling');
 					}
 				},
-			}
-		}
-	});
 
-	// Print transitions to console for debugging.
-	this.jumpFsm.on('transition', function (data) {
-		console.log(data.toState);
-	});
+				// Attempt to continue your jump streak.
+				jump: function () {
+					this.transition('streaking');
+				},
 
-	// State machine for horizontal movement.
-	this.horiMove = new machina.Fsm({
-		initialState: 'still',
-		states: {
-			movingLeft: {
-				update: function () {
+				left: function () {
 					self.vx -= self.ax;
 					if(self.vx < -MAX_SPEED) self.vx = -MAX_SPEED;
 				},
-				collide: function (item) {
-					self.x += self.vx;
+
+				right: function () {
+					self.vx += self.ax;
+					if(self.vx > MAX_SPEED) self.vx = MAX_SPEED;
 				}
 			},
 
-			movingRight: {
+			'streaking': {
+				_onEnter: function () {
+					if (self.jumpStreak < self.maxJumpStreak) {
+						self.jumpStreak++;
+						this.transition('jumping');
+					}
+				},
+
+				left: function () {
+					self.vx -= self.ax;
+					if(self.vx < -MAX_SPEED) self.vx = -MAX_SPEED;
+				},
+
+				right: function () {
+					self.vx += self.ax;
+					if(self.vx > MAX_SPEED) self.vx = MAX_SPEED;
+				}
+			},
+
+			'grounded': {
+				_onEnter: function () {
+					self.vy = 0;
+					self.highest = 0;
+					self.jumpStreak = 0; // Reset jump streak.
+				},
+
 				update: function () {
+				},
+
+				jump: function () {
+					this.transition('jumping');
+				},
+
+				left: function () {
+					self.vx -= self.ax;
+					if(self.vx < -MAX_SPEED) self.vx = -MAX_SPEED;
+				},
+
+				right: function () {
 					self.vx += self.ax;
 					if(self.vx > MAX_SPEED) self.vx = MAX_SPEED;
 				},
-				collide: function (item) {
-					self.x -= self.vx;
-				}
-			},
 
-			still: {
-				update: function () {
-					self.vx = 0;
+				still: function () {
+					if (self.vx > 0 && self.vx !== 0) self.vx -= self.ax;
+					else if (self.vx < 0 && self.vx !== 0) self.vx += self.ax;
+					else this.vx = 0;
 				}
 			}
 		}
+	});
+	
+	// Print transitions to console for debugging.
+	this.fsm.on('transition', function (data) {
+		// console.log(data.toState);
 	});
 };
 
 Player.prototype = Object.create(jaws.Sprite.prototype);
 
 Player.prototype.update = function () {
-	this.jumpFsm.handle('update');
-	this.horiMove.handle('update');
+	this.fsm.handle('update');
 	this.y += this.vy;
 	this.x += this.vx;
 };
 
 Player.prototype.jump = function () {
-	this.jumpFsm.handle('jump');
+	this.fsm.handle('jump');
 };
 
 Player.prototype.fall = function () {
-	this.jumpFsm.transition('falling');
+	this.fsm.transition('falling');
 };
 
 Player.prototype.land = function () {
-	this.jumpFsm.transition('grounded');
+	this.fsm.transition('grounded');
 };
 
 Player.prototype.moveLeft = function () {
-	this.horiMove.transition('movingLeft');
+	this.fsm.handle('left');
 };
 
 Player.prototype.moveRight = function () {
-	this.horiMove.transition('movingRight');
+	this.fsm.handle('right');
 };
 
 Player.prototype.stayStill = function () {
-	this.horiMove.transition('still');
+	// this.horiMove.transition('still');
+	this.fsm.handle('still');
 };
 
-Player.prototype.collide = function (item) {
-	this.jumpFsm.handle('collide', {item: item});
+Player.prototype.knockBack = function (item) {
+	if(this.x - item.x > 0) {
+		this.vx = MAX_SPEED * 2;
+	} else {
+		this.vx = -MAX_SPEED * 2;
+	}
 };
 
 return Player;

@@ -151,10 +151,24 @@ return {
 	},
 
 	draw: function () {
-		jaws.clear();
+		jaws.context.save();
+		
+		// Draw game with 50% alpha to acheive "motion blur" effect.
+		jaws.context.globalAlpha = 0.5;
+		
+		// Draw background.
+		jaws.context.fillStyle = '#fff';
+		jaws.context.beginPath();
+		jaws.context.rect(0, 0, jaws.width, jaws.height);
+		jaws.context.fill();
+
+		jaws.context.restore();
+
+		// Draw game objects.
 		map.draw();
 		viewport.draw(player);
 		this.drawScores();
+		
 	}
 };
 

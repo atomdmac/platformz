@@ -119,6 +119,7 @@ Tamepad.prototype.update = function() {
 
 Tamepad.prototype.pressed = function(button) {
 	updateGamepads();
+	if(!this.gamepad) return false;
 	if (typeof(this.gamepad.buttons[button]) == "object") {
 		return this.gamepad.buttons[button].pressed;
 	}

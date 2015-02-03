@@ -48,9 +48,9 @@ return {
 		tamepad.update();
 		
 		// Handle input;
-		if(jaws.pressed('left')) {
+		if(jaws.pressed('left') || tamepad.readJoystick('left').x < -0.25) {
 			player.moveLeft();
-		} else if(jaws.pressed('right')) {
+		} else if(jaws.pressed('right') || tamepad.readJoystick('left').x > 0.25) {
 			player.moveRight();
 		} else {
 			player.stayStill();
@@ -60,7 +60,7 @@ return {
 			player.jump();
 		}
 
-		if(jaws.pressedWithoutRepeat('p')) {
+		if(jaws.pressedWithoutRepeat('p') || tamepad.pressedWithoutRepeat(9)) {
 			jaws.switchGameState(PauseState);
 		}
 

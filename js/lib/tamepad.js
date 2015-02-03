@@ -9,6 +9,29 @@ var gamepadTypes = ["Xbox 360"];
 var connectMethod;
 
 
+var inputMap = {
+	"default": {
+		"joysticks": {
+			"left" : { x: 0, y: 1 },
+			"right": { x: 2, y: 3 }
+		}
+	},
+	"Xbox 360": {
+		"joysticks": {
+			"left" : { x: 0, y: 1 },
+			"right": { x: 2, y: 3 }
+		}
+	}
+};
+
+// Account for inputs that are mapped incorrectly by the browser.
+if (navigator.userAgent.indexOf('Firefox') !== -1) {
+	inputMap["Xbox 360"].joysticks = {
+		"left" : { x: 1, y: 0 },
+		"right": { x: 3, y: 2 }
+	};
+}
+
 function addGamepad(gamepad) {
 	for (var lcv = 0; lcv < gamepadTypes.length; lcv++) {
 		if (gamepad.id.toLowerCase().indexOf(gamepadTypes[lcv].toLowerCase()) !== -1) {
@@ -77,34 +100,13 @@ setupGamepadSupport();
 
 
 var Tamepad = function () {
-	
-	this.inputMap = {
-		"default": {
-			"joysticks": {
-				"left" : { x: 0, y: 1 },
-				"right": { x: 2, y: 3 }
-			}
-		},
-		"Xbox 360": {
-			"joysticks": {
-				"left" : { x: 0, y: 1 },
-				"right": { x: 2, y: 3 }
-			}
-		}
-	};
-	
-	// Account for inputs that are mapped incorrectly by the browser.
-	if (navigator.userAgent.indexOf('Firefox') !== -1) {
-		this.inputMap["Xbox 360"].joysticks = {
-			"left" : { x: 1, y: 0 },
-			"right": { x: 3, y: 2 }
-		};
-	}
-	
 	scanGamepads();
 	
 	// TODO: Register gamepad index with this Tamepad instance.
 	this.gamepad = gamepads[0]; // Debug: hardocded to first gamepad.
+	
+	// select inputMap
+	this.inputMap = inputMap[this.gamepad.type];
 	
 	this.buttonsPressedWithoutRepeat = {};
 };
@@ -155,16 +157,22 @@ Tamepad.prototype.readRightJoystick = function () {
 
 Tamepad.prototype.readJoystick = function(joystick) {
 	updateGamepads();
-	var mappings = this.inputMap[this.gamepad.type].joysticks[joystick];
-	var analogX = this.gamepad.axes[mappings.x];
-	var analogY = this.gamepad.axes[mappings.y];
-	
-	var angle = Math.atan2(analogX, analogY);
-	var magnitude = Math.sqrt(analogX*analogX+analogY*analogY);
+	var mappings = this.inputMap.joysticks[joystick];
 	
 	return {
-		analogX: analogX,
-		analogY: analogY,
+		x: this.gamepad.axes[mappings.x],
+		y: this.gamepad.axes[mappings.y]
+	};
+};
+
+Tamepad.prototype.readJoystickAngleMagnitude = function(joystick) {
+	var analog = this.readJoystick(joystick);
+	var angle = Math.atan2(analog.x, analog.y);
+	var magnitude = Math.sqrt(analog.x*analog.x+analog.y*analog.y);
+	
+	return {
+		x: analog.x,
+		y: analog.y,
 		angle: angle,
 		magnitude: magnitude
 	};

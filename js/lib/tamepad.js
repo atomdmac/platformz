@@ -111,7 +111,7 @@ var Tamepad = function () {
 
 Tamepad.prototype.update = function() {
 	for (var btnKey in this.buttonsPressedWithoutRepeat) {
-		if (!this.pressed(Number(btkKey))) {
+		if (!this.pressed(Number(btnKey))) {
 			delete this.buttonsPressedWithoutRepeat[btnKey];
 		}
 	}

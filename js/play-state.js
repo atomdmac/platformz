@@ -1,8 +1,8 @@
 define(
-['lib/jaws', 'player', 'map', 'death-state', 'pause-state', 'score-keeper', 'player-tracker'],
-function (jaws, Player, Map, DeathState, PauseState, ScoreKeeper, PlayerTracker) {
+['lib/jaws', 'lib/tamepad', 'player', 'map', 'death-state', 'pause-state', 'score-keeper', 'player-tracker'],
+function (jaws, Tamepad, Player, Map, DeathState, PauseState, ScoreKeeper, PlayerTracker) {
 
-var player, playerTracker, viewport, map, score;
+var player, playerTracker, viewport, map, score, tamepad;
 
 // PLEASE CLEAN THIS UP
 function collide (spr1, spr2) {
@@ -36,10 +36,17 @@ return {
 
 		playerTracker = new PlayerTracker();
 		playerTracker.setTrackTarget(player);
+		
+		
+		tamepad = new Tamepad();
 	},
 
 	update: function () {
-
+		
+		// Update tamepad.
+		// TODO: Don't require manual update to facilitate tamepad.pressedWithoutRepeat().
+		tamepad.update();
+		
 		// Handle input;
 		if(jaws.pressed('left')) {
 			player.moveLeft();
@@ -49,7 +56,7 @@ return {
 			player.stayStill();
 		}
 
-		if(jaws.pressedWithoutRepeat('up')) {
+		if(jaws.pressedWithoutRepeat('up') || tamepad.pressedWithoutRepeat(0)) {
 			player.jump();
 		}
 

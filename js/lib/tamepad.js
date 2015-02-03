@@ -139,6 +139,20 @@ Tamepad.prototype.pressedWithoutRepeat = function(button) {
 	return true;
 };
 
+Tamepad.prototype.readLeftJoystick = function () {
+	return {
+		x: this.gamepad.axes[0],
+		y: this.gamepad.axes[1]
+	};
+};
+
+Tamepad.prototype.readRightJoystick = function () {
+	return {
+		x: this.gamepad.axes[3],
+		y: this.gamepad.axes[4]
+	};
+};
+
 Tamepad.prototype.readJoystick = function(joystick) {
 	updateGamepads();
 	var mappings = this.inputMap[this.gamepad.type].joysticks[joystick];

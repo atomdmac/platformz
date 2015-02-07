@@ -95,10 +95,10 @@ return {
 			// Poll for input.
 			tamepad.update();
 
-			if(tamepad.readLeftJoystick().x < -0.25) {
+			if(tamepad.readJoystick('left').x < -0.25) {
 				player.moveLeft();
 				hasInput = true;
-			} else if(tamepad.readLeftJoystick().x > 0.25) {
+			} else if(tamepad.readJoystick('left').x > 0.25) {
 				player.moveRight();
 				hasInput = true;
 			}

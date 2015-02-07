@@ -18,9 +18,9 @@ require.config({
 });
 
 require(
-['lib/jaws', 'play-state'],
-function (jaws, playState) {
+['lib/jaws', 'main-menu-state'],
+function (jaws, MainMenuState) {
 
-	jaws.start(playState);
+	jaws.start(new MainMenuState());
 
 });

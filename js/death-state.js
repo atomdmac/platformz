@@ -1,4 +1,6 @@
-define(['lib/jaws', 'score-keeper', 'utils'], function (jaws, ScoreKeeper, utils) {
+define(
+['require', 'lib/jaws', 'score-keeper', 'utils', 'lib/tamepad', 'play-state'], 
+function (require, jaws, ScoreKeeper, utils, Tamepad) {
 
 return {
 	alpha: 0,
@@ -8,7 +10,32 @@ return {
 		this.alpha = 0;
 		this.message = this.shame[utils.randomInt(0, this.shame.length-1)];
 	},
-	update: function () {},
+	update: function () {
+		if(!this.checkGamepadInput()) this.checkKeyboardInput();
+	},
+
+	checkGamepadInput: function () {
+		var hasInput = false,
+			tamepad = Tamepad.get('player');
+		if(tamepad) {
+			tamepad.update();
+			if(tamepad.pressedWithoutRepeat(9)) {
+				jaws.switchGameState(require('play-state').initialize());
+				hasInput = true;
+			}
+		}
+		return hasInput;
+	},
+
+	checkKeyboardInput: function () {
+		var hasInput = false;
+		if(jaws.pressedWithoutRepeat('space')) {
+			jaws.switchGameState(require('play-state').initialize());
+			hasInput = true;
+		}
+		return hasInput;
+	},
+
 	draw: function () {
 		
 		if(this.alpha < 1) {

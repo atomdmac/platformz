@@ -2,7 +2,7 @@ define(
 ['lib/jaws', 'lib/tamepad', 'player', 'map', 'death-state', 'pause-state', 'score-keeper', 'player-tracker'],
 function (jaws, Tamepad, Player, Map, DeathState, PauseState, ScoreKeeper, PlayerTracker) {
 
-var player, playerTracker, viewport, map, score, tamepad;
+var player, playerTracker, viewport, map, score;
 
 // PLEASE CLEAN THIS UP
 function collide (spr1, spr2) {
@@ -13,12 +13,8 @@ function collide (spr1, spr2) {
 }
 
 return {
-
-	setup: function () {
-		// Make sure setup() doesn't run when returning from pause.
-		// TODO: Find a less hack-y way to make sure setup() doesn't run when returning from pause.
-		if(player) return;
-
+	initialized: false,
+	initialize: function () {
 		player = new Player({
 			x: 0,
 			y: 0,
@@ -36,34 +32,19 @@ return {
 
 		playerTracker = new PlayerTracker();
 		playerTracker.setTrackTarget(player);
-		
-		
-		tamepad = new Tamepad();
+
+		this.initialized = true;
+
+		return this;
 	},
 
-	update: function () {
-		
-		// Update tamepad.
-		// TODO: Don't require manual update to facilitate tamepad.pressedWithoutRepeat().
-		tamepad.update();
-		
+	setup: function () {
+		if(!this.initialized) this.initialize();
+	},
+
+	update: function () {	
 		// Handle input;
-		if(jaws.pressed('left')) {
-			player.moveLeft();
-		} else if(jaws.pressed('right')) {
-			player.moveRight();
-		} else {
-			player.stayStill();
-		}
-
-		if(jaws.pressedWithoutRepeat('up') || tamepad.pressedWithoutRepeat(0)) {
-			player.jump();
-		}
-
-		if(jaws.pressedWithoutRepeat('p')) {
-			jaws.switchGameState(PauseState);
-		}
-
+		if(!this.checkGamepadInput()) this.checkKeyboardInput();
 		
 		// Update map and entities.
 		map.update();
@@ -79,6 +60,60 @@ return {
 		this.checkDeath();
 		this.updateScore();
 		playerTracker.update();
+	},
+
+	checkKeyboardInput: function () {
+		var hasInput = false;
+		if(jaws.pressed('left')) {
+			player.moveLeft();
+			hasInput = true;
+		} else if(jaws.pressed('right')) {
+			player.moveRight();
+			hasInput = true;
+		} else {
+			player.stayStill();
+			hasInput = true;
+		}
+
+		if(jaws.pressedWithoutRepeat('up')) {
+			player.jump();
+			hasInput = true;
+		}
+
+		if(jaws.pressedWithoutRepeat('p')) {
+			jaws.switchGameState(PauseState);
+			hasInput = true;
+		}
+
+		return hasInput;
+	},
+
+	checkGamepadInput: function () {
+		var tamepad = Tamepad.get('player'),
+			hasInput = false;
+		if(tamepad) {
+			// Poll for input.
+			tamepad.update();
+
+			if(tamepad.readLeftJoystick().x < -0.25) {
+				player.moveLeft();
+				hasInput = true;
+			} else if(tamepad.readLeftJoystick().x > 0.25) {
+				player.moveRight();
+				hasInput = true;
+			}
+
+			if(tamepad.pressedWithoutRepeat(0)) {
+				player.jump();
+				hasInput = true;
+			}
+
+			if(tamepad.pressedWithoutRepeat(9)) {
+				jaws.switchGameState(PauseState);
+				hasInput = true;
+			}
+		}
+		return hasInput;
 	},
 
 	updateScore: function () {
